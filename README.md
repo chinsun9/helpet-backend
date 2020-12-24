@@ -97,3 +97,29 @@ git push heroku master
 // 참고; https://ko.nuxtjs.org/faq/heroku-deployment/
 heroku config:set NPM_CONFIG_PRODUCTION=false
 ```
+
+## graphQL 사용해보기
+
+- https://www.youtube.com/watch?v=EkWI6Ru8lFQ
+
+### setup
+
+```
+// 조회하기
+{
+    articles {
+        id,
+        title,
+      },
+}
+
+// 생성하기
+mutation {
+  create_article (input: {
+    title: "new번 타이틀",
+    datetime: "2020.12.24",
+    thumbnailUrl: "asdf",
+  })
+}
+
+```
