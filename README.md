@@ -123,3 +123,181 @@ mutation {
 }
 
 ```
+
+## ERD
+
+![erd 1](/docs/erd/1.png)
+
+- https://aquerytool.com/
+- tag 스키마 짤 때 참고 ; https://stackoverflow.com/questions/20856/recommended-sql-database-design-for-tags-or-tagging
+
+## RDS 셋업
+
+```sql
+-- 데이터베이스 생성
+CREATE DATABASE helpet;
+
+-- 유저 생성
+-- DROP user 'helpetuser'@'%'  ;
+CREATE USER 'helpetuser' @'%' IDENTIFIED BY '5uperhelpet!';
+GRANT ALL PRIVILEGES ON helpet.* TO 'helpetuser' @'%' WITH GRANT OPTION;
+SHOW GRANTS FOR 'helpetuser' @'%';
+
+-- 수정사항 반영
+FLUSH PRIVILEGES;
+```
+
+```sql setup.sql
+
+-- 테이블 순서는 관계를 고려하여 한 번에 실행해도 에러가 발생하지 않게 정렬되었습니다.
+
+-- user Table Create SQL
+CREATE TABLE user
+(
+    `uidx`           INT            NOT NULL    AUTO_INCREMENT COMMENT '유저 인덱스',
+    `uid`            VARCHAR(20)    NOT NULL    COMMENT '아이디',
+    `upass`          VARCHAR(20)    NOT NULL    COMMENT '비밀번호',
+    `uname`          VARCHAR(30)    NOT NULL    COMMENT '이름',
+    `uemail`         VARCHAR(30)    NOT NULL    COMMENT '이메일',
+    `uaddr`          VARCHAR(50)    NULL        COMMENT '주소',
+    `uaccount`       VARCHAR(20)    NULL        COMMENT '계좌',
+    `uphone`         VARCHAR(15)    NULL        COMMENT '전화번호',
+    `ustate`         CHAR(1)        NULL        COMMENT '유저 타입, 탈퇴 여부 등',
+    `u_insert_date`  TIMESTAMP      NULL        DEFAULT CURRENT_TIMESTAMP   COMMENT '회원가입일',
+    PRIMARY KEY (uidx)
+);
+
+ALTER TABLE user
+    ADD CONSTRAINT UC_uid UNIQUE (uid);
+
+
+-- user Table Create SQL
+CREATE TABLE product
+(
+    `pidx`        INT             NOT NULL    AUTO_INCREMENT COMMENT '상품 인덱스',
+    `pname`       VARCHAR(150)    NOT NULL    COMMENT '상품명',
+    `content`     TEXT            NOT NULL    COMMENT '내용',
+    `summary`     VARCHAR(150)    NOT NULL    COMMENT '개요',
+    `thumbnail`   VARCHAR(100)    NULL        COMMENT '썸네일',
+    `use_flag`    CHAR(1)         NOT NULL    COMMENT '사용 플래그',
+    `count_view`  INT             NOT NULL    COMMENT '조회수',
+    `price`       INT             NOT NULL    COMMENT '가격',
+    `uidx`        INT             NOT NULL    COMMENT '유저 인덱스',
+    PRIMARY KEY (pidx)
+);
+
+ALTER TABLE product
+    ADD CONSTRAINT FK_product_uidx_user_uidx FOREIGN KEY (uidx)
+        REFERENCES user (uidx) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- user Table Create SQL
+CREATE TABLE article
+(
+    `aidx`         INT             NOT NULL    AUTO_INCREMENT COMMENT '글 인덱스',
+    `title`        VARCHAR(150)    NOT NULL    COMMENT '제목',
+    `content`      TEXT            NOT NULL    COMMENT '내용',
+    `summary`      VARCHAR(150)    NOT NULL    COMMENT '개요',
+    `thumbnail`    VARCHAR(100)    NULL        COMMENT '썸네일',
+    `use_flag`     CHAR(1)         NOT NULL    COMMENT '사용 플래그',
+    `count_view`   INT             NOT NULL    COMMENT '조회수',
+    `count_like`   INT             NOT NULL    COMMENT '좋아요수',
+    `insert_date`  TIMESTAMP       NOT NULL    DEFAULT CURRENT_TIMESTAMP    COMMENT '등록일',
+    `update_date`  TIMESTAMP       NOT NULL    DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP  COMMENT '수정일',
+    `insert_uidx`  INT             NOT NULL    COMMENT '유저 인덱스',
+    PRIMARY KEY (aidx)
+);
+
+ALTER TABLE article
+    ADD CONSTRAINT FK_article_insert_uidx_user_uidx FOREIGN KEY (insert_uidx)
+        REFERENCES user (uidx) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- user Table Create SQL
+CREATE TABLE `order`
+(
+    `oidx`         INT            NOT NULL    AUTO_INCREMENT COMMENT '주문 인덱스',
+    `insert_date`  TIMESTAMP      NOT NULL    DEFAULT CURRENT_TIMESTAMP   COMMENT '주문일',
+    `uaddr`        VARCHAR(50)    NOT NULL    COMMENT '배송지',
+    `total_price`  INT            NOT NULL    COMMENT '총 가격',
+    `uidx`         INT            NOT NULL    COMMENT '주문 유저',
+    PRIMARY KEY (oidx)
+);
+
+ALTER TABLE `order`
+    ADD CONSTRAINT FK_order_uidx_user_uidx FOREIGN KEY (uidx)
+        REFERENCES user (uidx) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- user Table Create SQL
+CREATE TABLE articleTag
+(
+    `aidx`  INT            NOT NULL    COMMENT '글 인덱스',
+    `tag`   VARCHAR(50)    NOT NULL    COMMENT '태그명',
+    PRIMARY KEY (aidx, tag)
+);
+
+ALTER TABLE articleTag
+    ADD CONSTRAINT FK_articleTag_aidx_article_aidx FOREIGN KEY (aidx)
+        REFERENCES article (aidx) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- user Table Create SQL
+CREATE TABLE basket
+(
+    `pidx`   INT    NOT NULL    COMMENT '상품 인덱스',
+    `uidx`   INT    NOT NULL    COMMENT '유저 인덱스',
+    `count`  INT    NOT NULL    COMMENT '수량',
+    PRIMARY KEY (pidx, uidx)
+);
+
+ALTER TABLE basket
+    ADD CONSTRAINT FK_basket_pidx_product_pidx FOREIGN KEY (pidx)
+        REFERENCES product (pidx) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE basket
+    ADD CONSTRAINT FK_basket_uidx_user_uidx FOREIGN KEY (uidx)
+        REFERENCES user (uidx) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- user Table Create SQL
+CREATE TABLE review
+(
+    `pidx`    INT     NOT NULL    COMMENT '상품 인덱스',
+    `uidx`    INT     NOT NULL    COMMENT '유저 인덱스',
+    `rating`  INT     NOT NULL    COMMENT '별점',
+    `review`  TEXT    NOT NULL    COMMENT '리뷰',
+    PRIMARY KEY (pidx, uidx)
+);
+
+ALTER TABLE review
+    ADD CONSTRAINT FK_review_pidx_product_pidx FOREIGN KEY (pidx)
+        REFERENCES product (pidx) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE review
+    ADD CONSTRAINT FK_review_uidx_user_uidx FOREIGN KEY (uidx)
+        REFERENCES user (uidx) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- user Table Create SQL
+CREATE TABLE orderSet
+(
+    `oidx`   INT            NOT NULL    COMMENT '주문 인덱스',
+    `pidx`   INT            NOT NULL    COMMENT '상품 인덱스',
+    `count`  VARCHAR(45)    NOT NULL    COMMENT '수량',
+    PRIMARY KEY (oidx, pidx)
+);
+
+ALTER TABLE orderSet
+    ADD CONSTRAINT FK_orderSet_pidx_product_pidx FOREIGN KEY (pidx)
+        REFERENCES product (pidx) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE orderSet
+    ADD CONSTRAINT FK_orderSet_oidx_order_oidx FOREIGN KEY (oidx)
+        REFERENCES `order` (oidx) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+
+```
+
+- `order` 테이블의 이름이 sql에서 사용되는 키워드라서 ` 를 감싸줘야한다.
