@@ -29,6 +29,8 @@ type ArticlePreview2 = ArticlePreview & { url: string };
 
 const getArticlePreview = async () => {
   const baseurl = 'https://mypetlife.co.kr/category/%ec%83%9d%ed%99%9c/page/';
+  //   const baseurl = 'https://mypetlife.co.kr/category/catlab/page/';
+  //   const baseurl = 'https://mypetlife.co.kr/category/doglab/page/';
   let url = [];
   let range = 5;
 
