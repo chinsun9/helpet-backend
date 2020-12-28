@@ -126,7 +126,7 @@ mutation {
 
 ## ERD
 
-![erd 1](/docs/erd/1.png)
+![erd 2](/docs/erd/2.png)
 
 - https://aquerytool.com/
 - tag 스키마 짤 때 참고 ; https://stackoverflow.com/questions/20856/recommended-sql-database-design-for-tags-or-tagging
@@ -301,3 +301,34 @@ ALTER TABLE orderSet
 ```
 
 - `order` 테이블의 이름이 sql에서 사용되는 키워드라서 ` 를 감싸줘야한다.
+
+### 1차 수정 ; 카테고리 테이블 추가
+
+```sql 카테고리 추가
+-- 카테고리 테이블 생성
+CREATE TABLE category
+(
+    `category_code`  VARCHAR(3)     NOT NULL    COMMENT '카테고리 코드',
+    `title`          VARCHAR(20)    NULL        COMMENT '카테고리명',
+    PRIMARY KEY (category_code)
+);
+
+-- 아티클 테이블에 카테고리코드 속성 추가
+ALTER TABLE
+    article
+ADD
+    category_code varchar(3) NOT NULL;
+
+-- 외래키 속성 추가
+ALTER TABLE article
+    ADD CONSTRAINT FK_article_category_code_category_category_code FOREIGN KEY (category_code)
+        REFERENCES category (category_code) ON DELETE RESTRICT ON UPDATE RESTRICT;
+```
+
+- 글에 카테고리 속성을 넣지 않은게 생각나서 추가해주었다.
+- 카테고리는 크게 대분류과 소분류로 구분된다.
+- 그렇게 많은 카테고리 분류를 가지지 않을 것같아서
+- 100의 자리는 대분류를 나타내고
+- 1의 자리는 소분류를 나타내도록 설계했다.
+- 대분류는 강아지100, 고양이200으로 하였고
+- 소분류는 건강01, 행동02, 음식03, 훈련04로 하였다.
