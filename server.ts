@@ -100,6 +100,10 @@ const resolver = {
   articles: () => {
     return memDB;
   },
+  article: (input: { id: number }) => {
+    console.log(input);
+    return memDB[input.id];
+  },
   create_article: (input: { input: ArticleInput }) => {
     const newIdx = memDB.length + 1;
     const { title, datetime, thumbnailUrl } = input.input;
