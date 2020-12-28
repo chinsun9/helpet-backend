@@ -2,30 +2,7 @@ import puppeteer from 'puppeteer';
 import cheerio from 'cheerio';
 import fs from 'fs';
 import path from 'path';
-
-type Article = {
-  aidx: number;
-  title: string;
-  content: string;
-  summary: string;
-  thumbnail: string;
-  use_flag: string;
-  count_view: number;
-  count_like: number;
-  insert_date: string;
-  update_date: string;
-  insert_uidx: number;
-  category_code: string;
-};
-
-type ArticlePreview = {
-  title: string;
-  summary: string;
-  thumbnail: string;
-  insert_date: string;
-};
-
-type ArticlePreview2 = ArticlePreview & { url: string };
+import { ArticlePreview2 } from './types';
 
 const getArticlePreview = async () => {
   const baseurl = 'https://mypetlife.co.kr/category/%ec%83%9d%ed%99%9c/page/';
