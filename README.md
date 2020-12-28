@@ -332,3 +332,19 @@ ALTER TABLE article
 - 1의 자리는 소분류를 나타내도록 설계했다.
 - 대분류는 강아지100, 고양이200으로 하였고
 - 소분류는 건강01, 행동02, 음식03, 훈련04로 하였다.
+
+## 목업데이터 생성용 웹 스크래퍼 만들기
+
+- 참고 ; https://www.youtube.com/watch?v=M_Rn3Y3Z4Mo
+- utils/scrapper.ts
+
+### setup
+
+```
+// 동적 웹 사이트에서 데이터를 추출
+yarn add puppeteer
+yarn add @types/puppeteer -D
+
+// dom parser with selector
+yarn add cheerio
+```
