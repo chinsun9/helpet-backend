@@ -348,3 +348,10 @@ yarn add @types/puppeteer -D
 // dom parser with selector
 yarn add cheerio
 ```
+
+### 관련 소스
+
+- utils/
+  - scrapper.ts ; 게시글 목록에서 미리보기 긇어오기
+  - articleContentScrapper.ts ; 긇어온 게시글 목록의 내용에 해당하는 부분을 긁어옴
+  - insertInitialData.ts ; 작성중 ; rds에 긁어온 데이터 삽입하기
