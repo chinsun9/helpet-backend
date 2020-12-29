@@ -1,6 +1,7 @@
 import mysql2 from 'mysql2/promise';
 import rdsSecret from './rdsSecret';
 import arrData from './resultContent-result-1609144541085.json}.json';
+import { ArticlePreview2 } from './types';
 
 type Content = {
   id: string;
@@ -61,6 +62,14 @@ const insertInitialArticleData = async () => {
   const insertDog = () => {
     // 강아지 글 load
     const data = require('./result-1609144541085.json');
+    const contentData = require('./resultContent-result-1609144541085.json}.json');
+    const contentDataMap = convertArray2Map(contentData);
+
+    data.forEach((element: ArticlePreview2) => {
+      const { insert_date, summary, thumbnail, title, url } = element;
+
+      const con;
+    });
 
     console.log(data);
   };
