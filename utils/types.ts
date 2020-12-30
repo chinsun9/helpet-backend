@@ -13,13 +13,26 @@ type Article = {
   category_code: string;
 };
 
-type ArticlePreview = {
+type OldArticlePreview = {
   title: string;
   summary: string;
   thumbnail: string;
   insert_date: string;
 };
 
-type ArticlePreview2 = ArticlePreview & { url: string };
+type ArticlePreview = {
+  aidx: string;
+  title: string;
+  summary: string;
+  thumbnail: string;
+  count_view: string;
+  count_like: string;
+  insert_date: string;
+  update_date: string;
+  insert_uidx: string;
+  category_code: string;
+};
 
-export { ArticlePreview2, ArticlePreview, Article };
+type ArticlePreview2 = OldArticlePreview & { url: string };
+
+export { ArticlePreview2, OldArticlePreview, Article, ArticlePreview };

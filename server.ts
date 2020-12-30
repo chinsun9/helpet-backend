@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
 import cors from 'cors';
+import { selectArticleList } from './utils/myDAO';
+import { ArticlePreview } from './utils/types';
 
 const PORT = process.env.PORT || 5000;
 
@@ -19,33 +21,27 @@ app.get('/', (req: Request, res: Response) => {
   res.send('server testing ok');
 });
 
-app.get('/data/1', (req: Request, res: Response) => {
-  res.json({
-    id: 1,
-    name: 'pepper',
-    age: 26,
-    job: 'developer',
-  });
-});
-
-app.get('/data/2', (req: Request, res: Response) => {
-  res.json({
-    id: 2,
-    name: 'kelly',
-    age: 21,
-    job: 'student',
-  });
-});
-
 const schema = buildSchema(`
 
 type Query {
-  articles: [Article]
-  article(id: Int): Article
+  articles: [ArticlePreview]
+  article(id: Int): ArticlePreview
 }
 
 type Mutation {
   create_article(input: ArticleInput): [Article]
+}
+
+type ArticlePreview { 
+  summary: String
+  thumbnail: String
+  use_flag: String
+  count_view: Int
+  count_like: Int
+  insert_date: String
+  update_date: String
+  insert_uidx: Int
+  category_code: String 
 }
 
 type Article {
@@ -98,11 +94,14 @@ let memDB: Article[] = [
 
 const resolver = {
   articles: () => {
-    return memDB;
+    const tmp = selectArticleList(1);
+
+    return tmp;
   },
-  article: (input: { id: number }) => {
-    console.log(input);
-    return memDB[input.id];
+  article: async (input: { id: number }) => {
+    const { id } = input;
+
+    return memDB[id];
   },
   create_article: (input: { input: ArticleInput }) => {
     const newIdx = memDB.length + 1;
@@ -117,6 +116,15 @@ const resolver = {
     return memDB;
   },
 };
+
+app.get('/test', (req: Request, res: Response) => {
+  res.json({
+    id: 2,
+    name: 'kelly',
+    age: 21,
+    job: 'student',
+  });
+});
 
 app.use(
   '/graphql',
