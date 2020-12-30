@@ -373,3 +373,24 @@ yarn add cheerio
   - scrapper.ts ; 게시글 목록에서 미리보기 긇어오기
   - articleContentScrapper.ts ; 긇어온 게시글 목록의 내용에 해당하는 부분을 긁어옴
   - insertInitialData.ts ; 작성중 ; rds에 긁어온 데이터 삽입하기
+
+## RDS 보안 설정
+
+- ssl 통한 보안
+
+```sql
+-- 유저가 ssl을 사용하도록 수정
+CREATE USER 'helpetuser' @'%' IDENTIFIED BY '5uperhelpet!' REQUIRE SSL;
+GRANT ALL PRIVILEGES ON helpet.* TO 'helpetuser' @'%' WITH GRANT OPTION;
+SHOW GRANTS FOR 'helpetuser' @'%';
+FLUSH PRIVILEGES;
+
+```
+
+```
+heroku config:set NPM_CONFIG_PRODUCTION=false
+
+heroku config:set DATABASE_URL="mysql2://helpetuser2:5uperhelpet!@%/helpet?sslca=rds-ca-2019-root.pem" -a <app_id>
+```
+
+-
