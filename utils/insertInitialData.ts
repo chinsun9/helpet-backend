@@ -1,22 +1,19 @@
 import mysql2 from 'mysql2/promise';
 import rdsSecret from './rdsSecret';
-import arrData from './resultContent-result-1609144541085.json}.json';
 import { ArticlePreview2 } from './types';
+import moment from 'moment';
 
 type Content = {
   id: string;
   result: string;
 };
 
-const pool = mysql2.createPool(rdsSecret);
-
 const convertArray2Map = (arr: any[]) => {
-  const resultMap = arr.reduce((map, cur: Content) => {
-    map[cur.id] = cur.result;
-    return map;
-  }, {});
-
-  return resultMap;
+  return new Map(
+    arr.map((cur: Content) => {
+      return [cur.id, cur.result];
+    })
+  );
 };
 
 const CategoryTable = {
@@ -57,24 +54,68 @@ const insertInitialUserData = async () => {
 
 const insertInitialArticleData = async () => {
   const queryString =
-    "INSERT INTO `helpet`.`article` (`title`, `content`, `summary`, `thumbnail`, `use_flag`, `count_view`, `count_like`, `insert_uidx`, `category_code`) VALUES ('?', '?', '?', '?', 'Y', '0', '0', '1', '?');";
+    "INSERT INTO `helpet`.`article` (`title`, `content`, `summary`, `thumbnail`, `use_flag`, `count_view`, `count_like`, `insert_uidx`, `category_code`,`insert_date`) VALUES (?, ?, ?, ?, 'Y', '0', '0', '1', ?, ?)";
 
-  const insertDog = () => {
+  const insertDog = async () => {
     // 강아지 글 load
-    const data = require('./result-1609144541085.json');
+    const data = require('./result-1609144541085.json') as ArticlePreview2[];
     const contentData = require('./resultContent-result-1609144541085.json}.json');
     const contentDataMap = convertArray2Map(contentData);
 
-    data.forEach((element: ArticlePreview2) => {
+    function getRandomArbitrary(min: number, max: number) {
+      return Math.floor(Math.random() * (max - min) + min);
+    }
+
+    const databaseConnection = await mysql2
+      .createPool(rdsSecret)
+      .getConnection();
+
+    for (const element of data) {
       const { insert_date, summary, thumbnail, title, url } = element;
+      const category_code = `10${getRandomArbitrary(0, 4)}`;
+      const content = contentDataMap.get(url);
 
-      const con;
-    });
+      let mySqlDate = '';
+      // rds는 utc기준
+      if (insert_date.length < 11) {
+        mySqlDate = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+      } else {
+        mySqlDate = moment(insert_date, 'YYYY년 MM월 DD일')
+          .utc()
+          .format('YYYY-MM-DD HH:mm:ss');
+      }
 
-    console.log(data);
+      // console.info(category_code, mySqlDate);
+
+      try {
+        const a = await databaseConnection.query(queryString, [
+          title,
+          content,
+          summary,
+          thumbnail,
+          category_code.toString(),
+          mySqlDate,
+        ]);
+        console.log('ok');
+      } catch (error) {
+        console.log('fail', [
+          title,
+          content,
+          summary,
+          thumbnail,
+          category_code.toString(),
+          mySqlDate,
+        ]);
+      }
+
+      // console.log([title, content, summary, category_code]);
+    }
+
+    return 1;
   };
 
-  insertDog();
+  const result = await insertDog();
+  console.log('Rmx', result);
 };
 
 // insertInitialCetegoryData();

@@ -22,6 +22,6 @@
   "author": "chinsung 200713 <chin_sung@naver.com>",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon ts-node server.ts"
+    "start": "nodemon server.ts"
   }
 }
