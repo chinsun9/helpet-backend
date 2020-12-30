@@ -3,7 +3,7 @@ import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
 import cors from 'cors';
 import { selectArticleList, selectArticle } from './utils/myDAO';
-import mysql2 from 'mysql2';
+import mysql2 from 'mysql2/promise';
 
 const PORT = process.env.PORT || 5000;
 
@@ -30,9 +30,10 @@ app.get('/helpetuser2', async (req: Request, res: Response) => {
       password: '5uperhelpet!',
       database: 'helpet',
     });
+    await pool.getConnection();
     r = ' superpower';
   } catch (error) {
-    res.send('fail');
+    res.send('fail' + error);
   }
 
   res.send('server testing ok123123' + r);
