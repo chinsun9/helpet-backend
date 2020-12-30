@@ -113,6 +113,14 @@ heroku config:set NPM_CONFIG_PRODUCTION=false
       },
 }
 
+{
+    article(aidx: 112) {
+        aidx,
+        title,
+      },
+}
+
+
 // 생성하기
 mutation {
   create_article (input: {
@@ -332,6 +340,16 @@ ALTER TABLE article
 - 1의 자리는 소분류를 나타내도록 설계했다.
 - 대분류는 강아지100, 고양이200으로 하였고
 - 소분류는 건강01, 행동02, 음식03, 훈련04로 하였다.
+
+### 2차 수정 ; thumbnail 크기 확대
+
+```sql
+ALTER TABLE `helpet`.`article`
+CHANGE COLUMN `thumbnail` `thumbnail` VARCHAR(300) NULL DEFAULT NULL COMMENT '썸네일' ;
+```
+
+- 100 에서 300으로 확대.
+- 스크랩한 url들을 확인하니까 100이 넘는 것들이 많이 있음...
 
 ## 목업데이터 생성용 웹 스크래퍼 만들기
 
