@@ -21,19 +21,21 @@ app.get('/', (req: Request, res: Response) => {
   res.send('server testing ok');
 });
 
-app.get('/helpetuser2', (req: Request, res: Response) => {
+app.get('/helpetuser2', async (req: Request, res: Response) => {
+  let r = '';
   try {
-    const pool = mysql2.createPool({
+    const pool = await mysql2.createPool({
       host: 'rds.cmnkfayymxyz.ap-northeast-2.rds.amazonaws.com',
       user: 'helpetuser2',
       password: '5uperhelpet!',
       database: 'helpet',
     });
+    r = ' superpower';
   } catch (error) {
     res.send('fail');
   }
 
-  res.send('server testing ok');
+  res.send('server testing ok123123' + r);
 });
 
 const schema = buildSchema(`
