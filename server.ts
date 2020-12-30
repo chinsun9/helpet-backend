@@ -33,7 +33,7 @@ app.get('/helpetuser2', (req: Request, res: Response) => {
     res.send('fail');
   }
 
-  res.send('server testing ok');
+  res.send('server testing ok123123');
 });
 
 const schema = buildSchema(`

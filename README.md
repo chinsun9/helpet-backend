@@ -390,7 +390,23 @@ FLUSH PRIVILEGES;
 ```
 heroku config:set NPM_CONFIG_PRODUCTION=false
 
-heroku config:set DATABASE_URL="mysql2://helpetuser2:5uperhelpet!@%/helpet?sslca=rds-ca-2019-root.pem" -a <app_id>
+heroku config:set DATABASE_URL="mysql2://helpetuser2:5uperhelpet!@%/helpet?sslca=rds-ca-2019-root.pem" -a helpet-backend
 ```
 
 -
+
+## heroku push 문제
+
+```
+
+C:\git\helpet-backend>git push heroku master
+To https://git.heroku.com/helpet-backend.git
+ ! [rejected]        master -> master (non-fast-forward)
+error: failed to push some refs to 'https://git.heroku.com/helpet-backend.git'
+hint: Updates were rejected because the tip of your current branch is behind
+hint: its remote counterpart. Integrate the remote changes (e.g.
+hint: 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+```
+
+- 이런 에러가 뜨면 `git pull heroku master` 하면된다
