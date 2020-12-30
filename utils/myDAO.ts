@@ -1,6 +1,5 @@
 import mysql2 from 'mysql2/promise';
 import rdsSecret from './rdsSecret';
-import { ArticlePreview } from './types';
 
 const pool = mysql2.createPool(rdsSecret);
 
