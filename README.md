@@ -380,12 +380,15 @@ yarn add cheerio
 
 ```sql
 -- 유저가 ssl을 사용하도록 수정
-CREATE USER 'helpetuser' @'%' IDENTIFIED BY '5uperhelpet!' REQUIRE SSL;
-GRANT ALL PRIVILEGES ON helpet.* TO 'helpetuser' @'%' WITH GRANT OPTION;
-SHOW GRANTS FOR 'helpetuser' @'%';
+CREATE USER 'helpetuser2' @'%' IDENTIFIED BY '5uperhelpet!' REQUIRE SSL;
+GRANT ALL PRIVILEGES ON helpet.* TO 'helpetuser2' @'%' WITH GRANT OPTION;
+SHOW GRANTS FOR 'helpetuser2' @'%';
 FLUSH PRIVILEGES;
 
 ```
+
+- `REQUIRE SSL` 유저 생성할때 ssl을 사용하도록 한다.
+- https://docs.aws.amazon.com/ko_kr/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html 인증서를 다운받고 프로젝트 루트 디렉터리에 넣는다.
 
 ```
 heroku config:set NPM_CONFIG_PRODUCTION=false
@@ -393,7 +396,7 @@ heroku config:set NPM_CONFIG_PRODUCTION=false
 heroku config:set DATABASE_URL="mysql2://helpetuser2:5uperhelpet!@%/helpet?sslca=rds-ca-2019-root.pem" -a helpet-backend
 ```
 
--
+- heroku config 에 DATABASE_URL을 작성해준다.
 
 ## heroku push 문제
 
@@ -409,4 +412,5 @@ hint: 'git pull ...') before pushing again.
 hint: See the 'Note about fast-forwards' in 'git push --help' for details.
 ```
 
-- 이런 에러가 뜨면 `git pull heroku master` 하면된다
+- 이런 에러가 뜨면 `git pull heroku master` 하면된다.
+- 왜인지 모르지만 변경사항이 없는데 자꾸 에러 메시지가 나온다.
