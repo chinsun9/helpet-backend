@@ -3,6 +3,7 @@ import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
 import cors from 'cors';
 import { selectArticleList, selectArticle } from './utils/myDAO';
+import mysql2 from 'mysql2';
 
 const PORT = process.env.PORT || 5000;
 
@@ -17,6 +18,21 @@ const app = new App().application;
 app.use(cors());
 
 app.get('/', (req: Request, res: Response) => {
+  res.send('server testing ok');
+});
+
+app.get('/helpetuser2', (req: Request, res: Response) => {
+  try {
+    const pool = mysql2.createPool({
+      host: 'rds.cmnkfayymxyz.ap-northeast-2.rds.amazonaws.com',
+      user: 'helpetuser2',
+      password: '5uperhelpet!',
+      database: 'helpet',
+    });
+  } catch (error) {
+    res.send('fail');
+  }
+
   res.send('server testing ok');
 });
 
