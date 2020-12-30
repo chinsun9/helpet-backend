@@ -4,6 +4,7 @@ import { buildSchema } from 'graphql';
 import cors from 'cors';
 import { selectArticleList, selectArticle } from './utils/myDAO';
 import mysql2 from 'mysql2/promise';
+import fs from 'fs';
 
 const PORT = process.env.PORT || 5000;
 
@@ -29,6 +30,9 @@ app.get('/helpetuser2', async (req: Request, res: Response) => {
       user: 'helpetuser2',
       password: '5uperhelpet!',
       database: 'helpet',
+      ssl: {
+        ca: fs.readFileSync(__dirname + '/rds-ca-2019-root.pem', 'utf-8'),
+      },
     });
     await pool.getConnection();
     r = ' superpower';
