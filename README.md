@@ -414,3 +414,34 @@ hint: See the 'Note about fast-forwards' in 'git push --help' for details.
 
 - 이런 에러가 뜨면 `git pull heroku master` 하면된다.
 - 왜인지 모르지만 변경사항이 없는데 자꾸 에러 메시지가 나온다.
+
+## rds 새로파기
+
+- db 유저 설정 건드리다가 집에서 밖에 접속못하는 db 만들어버려서 rds 새로파기
+- 덤프하는 김에 쓸대없는 데이터 삭제(미디어 태그 및 구글 광고)
+
+```cmd 덤프하기
+mysqldump -h rds.cmnkfayymxyz.ap-northeast-2.rds.amazonaws.com ^
+    -u helpetuser2 ^
+    -p5uperhelpet!  ^
+    --port=3306 ^
+    --single-transaction ^
+    --routines ^
+    --triggers ^
+    --databases TestDB > 20210131-sqldump.sql
+```
+
+- 덤프파일 위치 ; `etc/20210131-sqldump.sql`
+
+```cmd 덤프한거 새로운 rds에 적용시키기
+mysql -h rdsinstance.cmnkfayymxyz.ap-northeast-2.rds.amazonaws.com ^
+	-u r00t ^
+	-pv8iCEt2DXVdhKM3  < C:\git\helpet-backend\etc\20210131-sqldump.sql
+```
+
+```sql 다시 유저 생성
+CREATE USER 'helpetuser2'@'%' IDENTIFIED BY '5uperhelpet!' REQUIRE SSL;
+GRANT ALL PRIVILEGES ON helpet.* TO 'helpetuser2'@'%' WITH GRANT OPTION;
+SHOW GRANTS FOR 'helpetuser2'@'%';
+FLUSH PRIVILEGES;
+```
