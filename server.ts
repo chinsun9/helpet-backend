@@ -2,11 +2,19 @@ import express, { Request, Response } from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import session from 'express-session';
 import { selectArticleList, selectArticle } from './utils/myDAO';
 import mysql2 from 'mysql2/promise';
 import fs from 'fs';
 
 const PORT = process.env.PORT || 5000;
+
+var corsOptions = {
+  origin: true, // Allow-origin-access-origin
+  credentials: true, // Allow-origin-access-credential
+};
 
 class App {
   public application: express.Application;
@@ -16,10 +24,25 @@ class App {
 }
 
 const app = new App().application;
-app.use(cors());
+
+let sess;
+
+app.use(cors(corsOptions));
+app.use(cookieParser());
+app.use(bodyParser());
+app.use(
+  session({
+    secret: '@#@secret@#@',
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('server testing ok');
+  sess = req.session;
+
+  console.log('Session is here >>>', sess);
 });
 
 app.get('/helpetuser2', async (req: Request, res: Response) => {
@@ -48,10 +71,12 @@ const schema = buildSchema(`
 type Query {
   articles: [ArticlePreview]
   article(aidx: Int): Article
+  user: User
 }
 
 type Mutation {
   create_article(input: ArticleInput): [Article]
+  create_user(input: UserInput): User
 }
 
 type ArticlePreview { 
@@ -83,10 +108,23 @@ type Article {
   category_code: String 
 }
 
+type User {
+  id: Int
+  email: String
+  password: String
+  cookie: String
+}
+
 input ArticleInput {
   title: String,
   datetime: String,
   thumbnailUrl: String
+}
+
+input UserInput {
+  email: String
+  password: String
+  cookie: String
 }
 `);
 
@@ -101,6 +139,19 @@ type ArticleInput = {
   title: string;
   datetime: string;
   thumbnailUrl: string;
+};
+
+type UserInput = {
+  email: String;
+  password: String;
+  cookie: String;
+};
+
+type User = {
+  id: Number;
+  email: String;
+  password: String;
+  cookie: String;
 };
 
 let memDB: Article[] = [
@@ -123,6 +174,8 @@ let memDB: Article[] = [
     thumbnailUrl: 'asdf',
   },
 ];
+
+let userDB: User[] = [];
 
 const resolver = {
   articles: async () => {
@@ -151,6 +204,24 @@ const resolver = {
     });
     return memDB;
   },
+  user: () => {
+    return {
+      id: '1',
+      email: 'test@naver.com',
+      password: '1234',
+    };
+  },
+  create_user: (input: { input: UserInput }) => {
+    const newIdx = userDB.length + 1;
+    const { email, password, cookie } = input.input;
+    console.log({ email, password, cookie });
+    userDB.push({
+      id: newIdx,
+      email: email,
+      password: password,
+      cookie: cookie,
+    });
+  },
 };
 
 app.get('/test', (req: Request, res: Response) => {
@@ -162,11 +233,24 @@ app.get('/test', (req: Request, res: Response) => {
   });
 });
 
+app.post('/login', (req: Request, res: Response) => {
+  sess = req.session;
+
+  res.cookie('choco', '1');
+
+  console.log('SESSION >>', req.session);
+  console.log('BODY >>', req.body);
+  console.log('COOKIE >>', req.cookies);
+
+  res.send('cookie');
+});
+
 app.use(
   '/graphql',
   graphqlHTTP({
     schema: schema,
     rootValue: resolver,
+    graphiql: true,
   })
 );
 
