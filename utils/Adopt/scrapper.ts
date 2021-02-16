@@ -10,8 +10,8 @@ import { ArticlePreview2 } from './types';
 const getArticlePreview = async () => {
   // http://saac.kr/?act=board&bbs_code=sub2_1&bbs_mode=list&page=2
 
-  const baseurl =
-    'http://saac.kr/?act=board&bbs_code=sub2_1&bbs_mode=list&page=';
+  const baseurl = 'http://saac.kr/?act=board&bbs_code=sub2_3&page=';
+  // 'http://saac.kr/?act=board&bbs_code=sub2_1&bbs_mode=list&page=';
   let url = [];
   let range = 3;
 
