@@ -2,11 +2,11 @@ import puppeteer from 'puppeteer';
 import cheerio from 'cheerio';
 import fs from 'fs';
 import path from 'path';
-import { ArticlePreview2 } from '../types';
+import { ArticlePreview2 } from './types';
 
-// const fileName = 'result-1609144541085.json';
-// const fileName = 'result-1609144598225.json';
-const fileName = 'result-1609144639782.json';
+// const fileName = 'result-1613436847800.json'; // 입양 정보
+// const fileName = 'result-1613436847800-copy.json'; // 입양 정보 에러난것
+const fileName = 'result-1613439167135.json'; // 입양 후기
 
 const pathHere = (name: string) => {
   return path.join(__dirname, name);
@@ -63,8 +63,12 @@ const getArticlesContent = async () => {
 
       const html = await page.content();
 
-      const $ = cheerio.load(html);
-      const result = $('.entry-content').html();
+      let $ = cheerio.load(html);
+      $ = cheerio.load($('.board-content-wrap').html() as string);
+
+      const rawHTML = $('.board-content').html() as string;
+      // 전처리 필요없는 태그 제거
+      const result = rawHTML.trim().split('<!-- content end -->')[0].trim();
 
       return { id: url, result: result };
     };
@@ -76,7 +80,7 @@ const getArticlesContent = async () => {
   await browser.close();
 
   fs.writeFileSync(
-    pathHere(`resultContent-${fileName}}.json`),
+    pathHere(`resultContent-${fileName}`),
     JSON.stringify(result, null, 2)
   );
 };
