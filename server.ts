@@ -272,11 +272,79 @@ app.post('/signin', async (req: Request, res: Response) => {
     res.json({
       msg: 'fail',
     });
+    return;
+  }
+
+  console.log(req.session.id);
+  const prevSID = req.session.id;
+
+  // 세션 갱신
+  req.session.regenerate((err) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+
+    (req.session as any).user = result;
+
+    res.json({
+      msg: 'good',
+      ...(result as Object),
+      session: req.session,
+      pSID: prevSID,
+    });
+  });
+});
+
+app.get('/user', (req: Request, res: Response) => {
+  res.json({
+    msg: 'good',
+    session: req.session.id,
+  });
+});
+
+app.get('/sessionChk', (req: Request, res: Response) => {
+  if ((req.session as any).user) {
+    res.json({
+      msg: 'good',
+      session: req.session.id,
+    });
+    return;
   }
 
   res.json({
+    msg: 'no session',
+    session: req.session.id,
+  });
+});
+
+app.get('/sessionGet', (req: Request, res: Response) => {
+  req.session.regenerate((err) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+
+    (req.session as any).user = { uidx: 99999 };
+
+    res.json({
+      msg: 'good',
+      session: req.session,
+    });
+  });
+});
+
+app.get('/signout', (req: Request, res: Response) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+  });
+
+  res.json({
     msg: 'good',
-    ...(result as Object),
+    session: req.session.id,
   });
 });
 
