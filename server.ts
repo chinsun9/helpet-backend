@@ -5,7 +5,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import session from 'express-session';
-import { selectArticleList, selectArticle } from './utils/myDAO';
+import { selectArticleList, selectArticle, signin } from './utils/myDAO';
 import mysql2 from 'mysql2/promise';
 import fs from 'fs';
 
@@ -29,7 +29,13 @@ let sess;
 
 app.use(cors(corsOptions));
 app.use(cookieParser());
-app.use(bodyParser());
+
+app.use(bodyParser.json());
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 app.use(
   session({
     secret: '@#@secret@#@',
@@ -37,6 +43,7 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.use(cors());
 
 app.get('/', (req: Request, res: Response) => {
   res.send('server testing ok');
@@ -253,6 +260,25 @@ app.use(
     graphiql: true,
   })
 );
+
+app.post('/signin', async (req: Request, res: Response) => {
+  console.log(req.body);
+
+  const { email, password } = req.body;
+
+  const result = await signin(email, password);
+
+  if (!result) {
+    res.json({
+      msg: 'fail',
+    });
+  }
+
+  res.json({
+    msg: 'good',
+    ...(result as Object),
+  });
+});
 
 app.listen(PORT, () => {
   console.log('server running...');
