@@ -1,4 +1,4 @@
-type Article = {
+export type Article = {
   aidx: number;
   title: string;
   content: string;
@@ -13,14 +13,14 @@ type Article = {
   category_code: string;
 };
 
-type OldArticlePreview = {
+export type OldArticlePreview = {
   title: string;
   summary: string;
   thumbnail: string;
   insert_date: string;
 };
 
-type ArticlePreview = {
+export type ArticlePreview = {
   aidx: string;
   title: string;
   summary: string;
@@ -33,6 +33,30 @@ type ArticlePreview = {
   category_code: string;
 };
 
-type ArticlePreview2 = OldArticlePreview & { url: string };
+export type ArticlePreview2 = OldArticlePreview & { url: string };
 
-export { ArticlePreview2, OldArticlePreview, Article, ArticlePreview };
+export type ArticleSimple = {
+  id: number;
+  title: string;
+  datetime: string;
+  thumbnailUrl: string;
+};
+
+export type ArticleInput = {
+  title: string;
+  datetime: string;
+  thumbnailUrl: string;
+};
+
+export type UserInput = {
+  email: String;
+  password: String;
+  cookie: String;
+};
+
+export type User = {
+  id: Number;
+  email: String;
+  password: String;
+  cookie: String;
+};
