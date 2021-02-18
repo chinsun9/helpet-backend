@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
 import cors from 'cors';
@@ -8,6 +8,7 @@ import session from 'express-session';
 import { selectArticleList, selectArticle, signin } from './utils/myDAO';
 import mysql2 from 'mysql2/promise';
 import fs from 'fs';
+import chkSession from './middleware/chkSession';
 
 const PORT = process.env.PORT || 5000;
 
@@ -74,7 +75,6 @@ app.get('/helpetuser2', async (req: Request, res: Response) => {
 });
 
 const schema = buildSchema(`
-
 type Query {
   articles: [ArticlePreview]
   articlesv2(keyword: String, category_code: String, size: Int, page: Int): [ArticlePreview]
@@ -316,13 +316,6 @@ app.post('/signin', async (req: Request, res: Response) => {
   });
 });
 
-app.get('/user', (req: Request, res: Response) => {
-  res.json({
-    msg: 'good',
-    session: req.session.id,
-  });
-});
-
 app.get('/sessionChk', (req: Request, res: Response) => {
   if ((req.session as any).user) {
     res.json({
@@ -367,6 +360,24 @@ app.get('/signout', (req: Request, res: Response) => {
     session: req.session.id,
   });
 });
+
+/**
+ * 아래 api 부터는
+ * session 있는 사람만 api 사용 가능
+ */
+
+app.use(chkSession);
+
+app.get('/user', (req: Request, res: Response) => {
+  res.json({
+    msg: 'good',
+    session: req.session.id,
+  });
+});
+
+/**
+ * 서버 실행
+ */
 
 app.listen(PORT, () => {
   console.log('server running...');
