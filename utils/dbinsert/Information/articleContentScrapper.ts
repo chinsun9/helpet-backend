@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer';
 import cheerio from 'cheerio';
 import fs from 'fs';
 import path from 'path';
-import { ArticlePreview2 } from './types';
+import { ArticlePreview2 } from '../../types';
 
 // const fileName = 'result-1609144541085.json';
 // const fileName = 'result-1609144598225.json';

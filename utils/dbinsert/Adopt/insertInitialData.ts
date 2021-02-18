@@ -1,5 +1,5 @@
 import mysql2 from 'mysql2/promise';
-import rdsSecret from './../rdsSecret';
+import rdsSecret from '../../rdsSecret';
 import { ArticlePreview2 } from './types';
 import moment from 'moment';
 
