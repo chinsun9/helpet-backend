@@ -66,4 +66,23 @@ const signin = async (email: string, password: string) => {
   });
 };
 
-export { pool, selectArticle, selectArticleList, signin };
+const selectUser = async (uidx: number) => {
+  return await new Promise(async (resolve) => {
+    const connection = await pool.getConnection();
+
+    const query = `SELECT * FROM helpet.user where uidx=?`;
+    const queryArgs = [uidx];
+
+    const result = ((await connection.query(
+      query,
+      queryArgs
+    )) as mysql2.RowDataPacket[][])[0][0];
+    console.log(result);
+
+    await connection.release();
+
+    resolve(result);
+  });
+};
+
+export { pool, selectArticle, selectArticleList, signin, selectUser };
