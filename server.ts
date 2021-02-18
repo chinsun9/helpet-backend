@@ -47,6 +47,7 @@ const schema = buildSchema(`
 
 type Query {
   articles: [ArticlePreview]
+  articlesv2(keyword: String, category_code: String, size: Int, page: Int): [ArticlePreview]
   article(aidx: Int): Article
 }
 
@@ -127,6 +128,25 @@ let memDB: Article[] = [
 const resolver = {
   articles: async () => {
     const result = (await selectArticleList(1)) as any;
+
+    return result.map((item: any) => {
+      return { ...item, insert_date: item.insert_date.toString() };
+    });
+  },
+  articlesv2: async (input: {
+    keyword?: string;
+    category_code?: string;
+    page?: number;
+    size?: number;
+  }) => {
+    const { keyword, category_code, page, size } = input;
+
+    const result = (await selectArticleList(
+      page,
+      category_code,
+      keyword,
+      size
+    )) as any;
 
     return result.map((item: any) => {
       return { ...item, insert_date: item.insert_date.toString() };
