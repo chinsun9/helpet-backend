@@ -4,16 +4,17 @@ import rdsSecret from './rdsSecret';
 const pool = mysql2.createPool(rdsSecret);
 
 const selectArticleList = async (
-  page: number,
+  page = 1,
   category_code = '%',
-  keyword = '%'
+  keyword = '%',
+  size = 10
 ) => {
   return await new Promise(async (resolve) => {
     const connection = await pool.getConnection();
-    console.log(page, category_code);
+    console.log(page, category_code, keyword, size);
 
     const query = `SELECT aidx, title, summary, thumbnail, count_view, count_like, insert_date, update_date, insert_uidx, category_code  FROM helpet.article WHERE category_code LIKE ? AND title LIKE ? ORDER BY aidx DESC LIMIT ?, ?`;
-    const queryArgs = [category_code, keyword, 10 * (page - 1), 10];
+    const queryArgs = [category_code, `%${keyword}%`, size * (page - 1), size];
 
     const result = ((await connection.query(
       query,
