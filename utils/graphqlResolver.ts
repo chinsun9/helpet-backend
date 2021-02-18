@@ -1,6 +1,7 @@
 import { selectArticle, selectArticleList } from './myDAO';
+import { ArticleInput, ArticleSimple, User, UserInput } from './types';
 
-let memDB: Article[] = [
+let memDB: ArticleSimple[] = [
   {
     id: 0,
     title: '0번 타이틀',
