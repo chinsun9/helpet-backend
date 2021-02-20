@@ -85,4 +85,99 @@ const selectUser = async (uidx: number) => {
   });
 };
 
-export { pool, selectArticle, selectArticleList, signin, selectUser };
+const selectQna = async (page?: number) => {
+  return await new Promise(async (resolve) => {
+    const connection = await pool.getConnection();
+
+    const query = `SELECT * FROM helpet.article WHERE category_code = "500" LIMIT 0, 10;`;
+
+    const result = ((await connection.query(
+      query
+    )) as mysql2.RowDataPacket[][])[0][0];
+    console.log(result);
+
+    await connection.release();
+
+    resolve(result);
+  });
+};
+
+const insertQna = async (input: any) => {
+  return await new Promise(async (resolve) => {
+    const connection = await pool.getConnection();
+
+    const { title, content, uidx } = input;
+
+    const query =
+      'INSERT INTO `helpet`.`article` ' +
+      '(`title`, `content`, `summary`, `thumbnail`, `use_flag`, `count_view`, `count_like`, `insert_uidx`, `category_code`) ' +
+      "VALUES (?, ?, '-', '-', 'y', '0', '0', ?, '500')";
+    const queryArgs = [title, content, uidx];
+
+    const result = ((await connection.query(
+      query,
+      queryArgs
+    )) as mysql2.RowDataPacket[][])[0];
+
+    console.log(result);
+
+    await connection.release();
+
+    resolve(result);
+  });
+};
+
+const deleteQna = async (aidx: any) => {
+  return await new Promise(async (resolve) => {
+    const connection = await pool.getConnection();
+
+    const query = 'DELETE FROM `helpet`.`article` WHERE (`aidx` = ?)';
+    const queryArgs = [aidx];
+
+    const result = ((await connection.query(
+      query,
+      queryArgs
+    )) as mysql2.RowDataPacket[][])[0];
+
+    console.log(result);
+
+    await connection.release();
+
+    resolve(result);
+  });
+};
+
+const updateQna = async (input: any) => {
+  return await new Promise(async (resolve) => {
+    const connection = await pool.getConnection();
+
+    const { title, content, aidx } = input;
+    console.log(input);
+    const query =
+      'UPDATE `helpet`.`article` SET `title` = ?, `content` = ? WHERE (`aidx` = ?)';
+    const queryArgs = [title, content, aidx];
+
+    const result = ((await connection.query(
+      query,
+      queryArgs
+    )) as mysql2.RowDataPacket[][])[0];
+
+    console.log(result);
+
+    await connection.release();
+
+    resolve(result);
+  });
+};
+
+export {
+  pool,
+  selectArticle,
+  selectArticleList,
+  signin,
+  selectUser,
+  selectQna,
+  insertQna,
+  deleteQna,
+  updateQna,
+};
