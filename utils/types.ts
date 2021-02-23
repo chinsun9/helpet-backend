@@ -60,11 +60,3 @@ export type User = {
   password: String;
   cookie: String;
 };
-
-// dao
-
-export type RsSignin = {
-  uidx: number;
-};
-
-export type RSselectQna = {};
