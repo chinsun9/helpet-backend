@@ -1,4 +1,4 @@
-import mysql2 from 'mysql2/promise';
+import mysql2, { ResultSetHeader } from 'mysql2/promise';
 import rdsSecret from './rdsSecret';
 import { RSselectQna, RsSignin } from './types';
 
@@ -105,7 +105,11 @@ const selectQna = async (page = 1, uidx = '%'): Promise<RSselectQna> => {
   });
 };
 
-const insertQna = async (input: any) => {
+const insertQna = async (input: {
+  title: string;
+  content: string;
+  uidx: string;
+}): Promise<ResultSetHeader> => {
   return await new Promise(async (resolve) => {
     const connection = await pool.getConnection();
 
@@ -122,11 +126,13 @@ const insertQna = async (input: any) => {
       queryArgs
     )) as mysql2.RowDataPacket[];
 
-    console.log(result);
+    const tmp = JSON.parse(JSON.stringify(result)) as ResultSetHeader;
+
+    console.log(tmp);
 
     await connection.release();
 
-    resolve(result);
+    resolve(tmp);
   });
 };
 
