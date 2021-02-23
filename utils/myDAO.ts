@@ -4,6 +4,10 @@ import { RSselectQna, RsSignin } from './types';
 
 const pool = mysql2.createPool(rdsSecret);
 
+const Rs2Obj = (rs: any) => {
+  return JSON.parse(JSON.stringify(rs));
+};
+
 const selectArticleList = async (
   page = 1,
   category_code = '%',
@@ -126,17 +130,20 @@ const insertQna = async (input: {
       queryArgs
     )) as mysql2.RowDataPacket[];
 
-    const tmp = JSON.parse(JSON.stringify(result)) as ResultSetHeader;
+    const result2 = JSON.parse(JSON.stringify(result)) as ResultSetHeader;
 
-    console.log(tmp);
+    console.log(result2);
 
     await connection.release();
 
-    resolve(tmp);
+    resolve(result2);
   });
 };
 
-const deleteQna = async (aidx: string, uidx: string): Promise<boolean> => {
+const deleteQna = async (
+  aidx: string,
+  uidx: string
+): Promise<ResultSetHeader> => {
   return await new Promise(async (resolve) => {
     const connection = await pool.getConnection();
 
@@ -144,16 +151,18 @@ const deleteQna = async (aidx: string, uidx: string): Promise<boolean> => {
       'DELETE FROM `helpet`.`article` WHERE (`aidx` = ?) and insert_uidx=?';
     const queryArgs = [aidx, uidx];
 
-    const result = ((await connection.query(
+    const [result] = (await connection.query(
       query,
       queryArgs
-    )) as mysql2.RowDataPacket[][])[0];
+    )) as mysql2.RowDataPacket[];
 
     console.log(result);
 
+    const result2 = Rs2Obj(result) as ResultSetHeader;
+
     await connection.release();
 
-    resolve(false);
+    resolve(result2);
   });
 };
 
