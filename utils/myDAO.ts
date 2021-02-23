@@ -1,5 +1,6 @@
-import mysql2 from 'mysql2/promise';
+import mysql2, { RowDataPacket } from 'mysql2/promise';
 import rdsSecret from './rdsSecret';
+import { RSselectQna, RsSignin } from './types';
 
 const pool = mysql2.createPool(rdsSecret);
 
@@ -47,22 +48,21 @@ const selectArticle = async (aidx: number) => {
   });
 };
 
-const signin = async (email: string, password: string) => {
+const signin = async (email: string, password: string): Promise<RsSignin> => {
   return await new Promise(async (resolve) => {
     const connection = await pool.getConnection();
 
     const query = `SELECT uidx FROM helpet.user where uid=? and upass=?`;
     const queryArgs = [email, password];
 
-    const result = ((await connection.query(
+    const [result] = (await connection.query(
       query,
       queryArgs
-    )) as mysql2.RowDataPacket[][])[0][0];
-    console.log(result);
+    )) as RowDataPacket[];
 
     await connection.release();
 
-    resolve(result);
+    resolve(JSON.parse(JSON.stringify(result[0])));
   });
 };
 
@@ -85,20 +85,22 @@ const selectUser = async (uidx: number) => {
   });
 };
 
-const selectQna = async (page?: number) => {
+const selectQna = async (page = 1, uidx = '%'): Promise<RSselectQna> => {
   return await new Promise(async (resolve) => {
     const connection = await pool.getConnection();
 
-    const query = `SELECT * FROM helpet.article WHERE category_code = "500" LIMIT 0, 10;`;
-
-    const result = ((await connection.query(
-      query
-    )) as mysql2.RowDataPacket[][])[0][0];
+    const query = `SELECT * FROM helpet.article WHERE category_code = "500" and insert_uidx like ? LIMIT ?, 10`;
+    const queryArgs = [uidx ?? '%', page - 1];
+    console.log(queryArgs);
+    const [result] = (await connection.query(
+      query,
+      queryArgs
+    )) as mysql2.RowDataPacket[];
     console.log(result);
 
     await connection.release();
 
-    resolve(result);
+    resolve(JSON.parse(JSON.stringify(result)));
   });
 };
 
@@ -114,10 +116,10 @@ const insertQna = async (input: any) => {
       "VALUES (?, ?, '-', '-', 'y', '0', '0', ?, '500')";
     const queryArgs = [title, content, uidx];
 
-    const result = ((await connection.query(
+    const [result] = (await connection.query(
       query,
       queryArgs
-    )) as mysql2.RowDataPacket[][])[0];
+    )) as mysql2.RowDataPacket[];
 
     console.log(result);
 
@@ -127,12 +129,13 @@ const insertQna = async (input: any) => {
   });
 };
 
-const deleteQna = async (aidx: any) => {
+const deleteQna = async (aidx: string, uidx: string): Promise<boolean> => {
   return await new Promise(async (resolve) => {
     const connection = await pool.getConnection();
 
-    const query = 'DELETE FROM `helpet`.`article` WHERE (`aidx` = ?)';
-    const queryArgs = [aidx];
+    const query =
+      'DELETE FROM `helpet`.`article` WHERE (`aidx` = ?) and insert_uidx=?';
+    const queryArgs = [aidx, uidx];
 
     const result = ((await connection.query(
       query,
@@ -143,7 +146,7 @@ const deleteQna = async (aidx: any) => {
 
     await connection.release();
 
-    resolve(result);
+    resolve(false);
   });
 };
 
