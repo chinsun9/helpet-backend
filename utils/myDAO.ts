@@ -10,24 +10,35 @@ const Rs2Obj = <T>(rs: any): T => {
 
 const selectArticleList = async (
   page = 1,
-  category_code = '%',
-  keyword = '%',
+  category_code = '...',
+  keyword = '',
   size = 10
 ) => {
   return await new Promise(async (resolve) => {
-    const connection = await pool.getConnection();
-    console.log(page, category_code, keyword, size);
+    let connection;
+    let result;
+    try {
+      connection = await pool.getConnection();
+      console.log(page, category_code, keyword, size);
 
-    const query = `SELECT aidx, title, summary, thumbnail, count_view, count_like, insert_date, update_date, insert_uidx, category_code  FROM helpet.article WHERE category_code LIKE ? AND title LIKE ? ORDER BY aidx DESC LIMIT ?, ?`;
-    const queryArgs = [category_code, `%${keyword}%`, size * (page - 1), size];
+      const query = `SELECT aidx, title, summary, thumbnail, count_view, count_like, insert_date, update_date, insert_uidx, category_code  FROM helpet.article WHERE category_code REGEXP ? AND title LIKE ? ORDER BY aidx DESC LIMIT ?, ?`;
+      const queryArgs = [
+        category_code,
+        `%${keyword}%`,
+        size * (page - 1),
+        size,
+      ];
 
-    const result = ((await connection.query(
-      query,
-      queryArgs
-    )) as mysql2.RowDataPacket[][])[0];
-    console.log(result);
-
-    await connection.release();
+      result = ((await connection.query(
+        query,
+        queryArgs
+      )) as mysql2.RowDataPacket[][])[0];
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      await connection?.release();
+    }
 
     resolve(result);
   });
