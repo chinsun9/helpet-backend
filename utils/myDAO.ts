@@ -1,11 +1,14 @@
 import mysql2, { ResultSetHeader } from 'mysql2/promise';
 import rdsSecret from './rdsSecret';
-import { RSselectQna, RsSignin } from './types';
+import { RScountArticles, RSselectQna, RsSignin } from './types';
+import fs from 'fs';
+import path from 'path';
 
 const pool = mysql2.createPool(rdsSecret);
 
 const Rs2Obj = <T>(rs: any): T => {
-  return JSON.parse(JSON.stringify(rs)) as T;
+  return rs as T;
+  // return JSON.parse(JSON.stringify(rs)) as T;
 };
 
 const selectArticleList = async (
@@ -206,6 +209,29 @@ const updateQna = async (input: {
   });
 };
 
+const countArticles = async (category_code = '...'): Promise<number> => {
+  return await new Promise(async (resolve) => {
+    const connection = await pool.getConnection();
+
+    const query = fs
+      .readFileSync(path.join(__dirname, './countArticles.sql'))
+      .toString();
+    const queryArgs = [category_code];
+
+    const [result] = (await connection.query(
+      query,
+      queryArgs
+    )) as mysql2.RowDataPacket[];
+
+    const result2 = Rs2Obj<RScountArticles[]>(result);
+    console.log(result2);
+
+    await connection.release();
+
+    resolve(result2[0].count || 0);
+  });
+};
+
 export {
   pool,
   selectArticle,
@@ -216,4 +242,5 @@ export {
   insertQna,
   deleteQna,
   updateQna,
+  countArticles,
 };

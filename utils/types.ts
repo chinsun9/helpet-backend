@@ -68,3 +68,7 @@ export type RsSignin = {
 };
 
 export type RSselectQna = {};
+
+export type RScountArticles = {
+  count: number;
+};
