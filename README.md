@@ -1,4 +1,4 @@
-- 비공개 레포, 공개 전환에 따라 filter-repo사용하여 시크릿 정보 git history에서 삭제
+- 비공개 레포, 공개 전환에 따라 filter-repo 사용하여 시크릿 정보 git history에서 삭제
 - `utils/rdsSecret.ts` 파일 삭제
 - `utils/dbinsert/` 디렉터리 삭제
 - `readme.md` 재작성
@@ -60,7 +60,7 @@ netlify login
 * Create new app
 * 리전은 `US`으로 선택
 
-- 완료하면 아래와같이 cli 명령이 나오는데 앞으로 참고한다.
+- 완료하면 아래와 같이 cli 명령이 나오는데 앞으로 참고한다.
 
 ```
 $ heroku login
@@ -85,7 +85,7 @@ $ git push heroku master
 // q를 제외한 아무 키나 입력하면 브라우저가 열리면서 로그인하면 성공
 heroku login
 
-// 위에 헤로쿠 사이트에서 알려준 터미널 명령으 참고해서 작성한다
+// 위에 헤로쿠 사이트에서 알려준 터미널 명령을 참고해서 작성한다
 // heroku 리모트 설정
 heroku git:remote -a helpet-backend
 
@@ -97,8 +97,8 @@ git commit -am "make it better"
 // https://helpet-backend.herokuapp.com/
 git push heroku master
 
-// 근데 Application error 화면을 보게될 것이다.
-// 에러로그를 확인하니까 ts-node 등 devdependencies를 참조하지 못하면서 생기는 에러 였다.
+// 근데 Application error 화면을 보게 될 것이다.
+// 에러로그를 확인하니까 ts-node 등 devdependencies를 참조하지 못하면서 생기는 에러였다.
 // heroku config NPM_CONFIG_PRODUCTION 를 false로 설정한다.
 // 참고; https://ko.nuxtjs.org/faq/heroku-deployment/
 heroku config:set NPM_CONFIG_PRODUCTION=false
@@ -313,7 +313,7 @@ ALTER TABLE orderSet
 
 ```
 
-- `order` 테이블의 이름이 sql에서 사용되는 키워드라서 ` 를 감싸줘야한다.
+- `order` 테이블의 이름이 sql에서 사용되는 키워드라서 ` 를 감싸줘야 한다.
 
 ### 1차 수정 ; 카테고리 테이블 추가
 
@@ -338,13 +338,13 @@ ALTER TABLE article
         REFERENCES category (category_code) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ```
 
-- 글에 카테고리 속성을 넣지 않은게 생각나서 추가해주었다.
-- 카테고리는 크게 대분류과 소분류로 구분된다.
-- 그렇게 많은 카테고리 분류를 가지지 않을 것같아서
+- 글에 카테고리 속성을 넣지 않은 게 생각나서 추가해주었다.
+- 카테고리는 크게 대분류와 소분류로 구분된다.
+- 그렇게 많은 카테고리 분류를 가지지 않을 것 같아서
 - 100의 자리는 대분류를 나타내고
 - 1의 자리는 소분류를 나타내도록 설계했다.
-- 대분류는 강아지100, 고양이200으로 하였고
-- 소분류는 건강01, 행동02, 음식03, 훈련04로 하였다.
+- 대분류는 강아지 100, 고양이 200으로 하였고
+- 소분류는 건강 01, 행동 02, 음식 03, 훈련 04로 하였다.
 
 ### 2차 수정 ; thumbnail 크기 확대
 
@@ -353,7 +353,7 @@ ALTER TABLE `helpet`.`article`
 CHANGE COLUMN `thumbnail` `thumbnail` VARCHAR(300) NULL DEFAULT NULL COMMENT '썸네일' ;
 ```
 
-- 100 에서 300으로 확대.
+- 100에서 300으로 확대.
 - 스크랩한 url들을 확인하니까 100이 넘는 것들이 많이 있음...
 
 ## 목업데이터 생성용 웹 스크래퍼 만들기
@@ -375,9 +375,9 @@ yarn add cheerio
 ### 관련 소스
 
 - utils/
-  - scrapper.ts ; 게시글 목록에서 미리보기 긇어오기
-  - articleContentScrapper.ts ; 긇어온 게시글 목록의 내용에 해당하는 부분을 긁어옴
-  - insertInitialData.ts ; 작성중 ; rds에 긁어온 데이터 삽입하기
+  - scrapper.ts ; 게시글 목록에서 미리보기 긁어오기
+  - articleContentScrapper.ts ; 긁어온 게시글 목록의 내용에 해당하는 부분을 긁어옴
+  - insertInitialData.ts ; 작성 중 ; rds에 긁어온 데이터 삽입하기
 
 ## RDS 보안 설정
 
@@ -392,7 +392,7 @@ FLUSH PRIVILEGES;
 
 ```
 
-- `REQUIRE SSL` 유저 생성할때 ssl을 사용하도록 한다.
+- `REQUIRE SSL` 유저 생성할 때 ssl을 사용하도록 한다.
 - https://docs.aws.amazon.com/ko_kr/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html 인증서를 다운받고 프로젝트 루트 디렉터리에 넣는다.
 
 ```
@@ -417,13 +417,13 @@ hint: 'git pull ...') before pushing again.
 hint: See the 'Note about fast-forwards' in 'git push --help' for details.
 ```
 
-- 이런 에러가 뜨면 `git pull heroku master` 하면된다.
+- 이런 에러가 뜨면 `git pull heroku master` 하면 된다.
 - 왜인지 모르지만 변경사항이 없는데 자꾸 에러 메시지가 나온다.
 
 ## rds 새로파기
 
-- db 유저 설정 건드리다가 집에서 밖에 접속못하는 db 만들어버려서 rds 새로파기
-- 덤프하는 김에 쓸대없는 데이터 삭제(미디어 태그 및 구글 광고)
+- db 유저 설정 건드리다가 집에서 밖에 접속 못하는 db 만들어버려서 rds 새로 만들기
+- 덤프하는 김에 쓸데없는 데이터 삭제(미디어 태그 및 구글 광고)
 
 ```cmd 덤프하기
 mysqldump -h rdsname.asdf.ap-northeast-2.rds.amazonaws.com ^
@@ -436,7 +436,7 @@ mysqldump -h rdsname.asdf.ap-northeast-2.rds.amazonaws.com ^
     --databases TestDB > 20210131-sqldump.sql
 ```
 
-```cmd 덤프한거 새로운 rds에 적용시키기
+```cmd 덤프 한 거 새로운 rds에 적용시키기
 mysql -h rdsname.asdf.ap-northeast-2.rds.amazonaws.com ^
 	-u username ^
 	-ppassword  < 20210131-sqldump.sql
